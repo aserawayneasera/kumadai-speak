@@ -10,7 +10,7 @@ export default function SupportFreeApp() {
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-xs leading-relaxed text-black-500">
             <span className="mr-1" aria-hidden="true">☕</span>
-            <strong>Did you find this helpful?</strong> You're welcome to support the guide, but it's completely <strong>optional</strong>. Your support helps keep it free for students, residents, and visitors. Thank you.
+            <strong>Did you find this helpful?</strong> You're welcome to support the guide, but it's completely <strong>OPTIONAL</strong>. Your support helps keep it free for students, residents, and visitors. Thank you.
           </p>
         
           <div className="flex shrink-0 items-center gap-2">
