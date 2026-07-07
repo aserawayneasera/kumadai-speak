@@ -3,8 +3,8 @@ import SponsorCard from '@/components/SponsorCard';
 const contactEmail = 'asera.wa@gmail.com';
 
 const packages = [
-  ['Office license', 'From ¥10,000 / month', 'Custom phrase set for one office, clinic, school, or counter.'],
-  ['Setup support', 'From ¥30,000 setup', 'QR page, staff-use guide, and first phrase customization.'],
+  ['Office license', 'From ¥2,000 / month', 'Custom phrase set for one office, clinic, school, or counter.'],
+  ['Setup support', 'From ¥4,000 setup', 'QR page, staff-use guide, and first phrase customization.'],
   ['Custom web app', 'Estimate after meeting', 'A small tool for organizations serving foreign residents or students.'],
 ];
 
