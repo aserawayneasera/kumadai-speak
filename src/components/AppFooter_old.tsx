@@ -7,7 +7,6 @@ type AppFooterProps = {
   aboutHref?: string;
   contactHref?: string;
   privacyHref?: string;
-  partnersHref?: string;
   linkedinUrl?: string;
   githubUrl?: string;
   phoneNumber?: string;
@@ -20,7 +19,6 @@ export default function AppFooter({
   aboutHref = '/about',
   contactHref = '/contact',
   privacyHref = '/privacy',
-  partnersHref = '/partners',
   linkedinUrl,
   githubUrl,
   phoneNumber,
@@ -32,6 +30,7 @@ export default function AppFooter({
   ].filter(Boolean) as { label: string; href: string }[];
 
   return (
+    // <footer className="border-t border-slate-200 bg-white px-5 py-10 text-center text-slate-500">
     <footer className="mt-12 border-t bg-white/80 px-4 pt-6 pb-44 text-center text-sm text-gray-500 sm:pb-20">
       <p className="text-sm font-semibold">{appName}™</p>
       <p className="mt-1 text-sm">Created by {creatorName}</p>
@@ -41,19 +40,12 @@ export default function AppFooter({
         <Link href={aboutHref} className="text-slate-600 underline underline-offset-4">
           About
         </Link>
-
-        <Link href={contactHref} className="text-slate-600 underline underline-offset-4">
+                <Link href={contactHref} className="text-slate-600 underline underline-offset-4">
           Contact
         </Link>
-
-        <Link href={privacyHref} className="text-slate-600 underline underline-offset-4">
+                <Link href={privacyHref} className="text-slate-600 underline underline-offset-4">
           Privacy
         </Link>
-
-        <Link href={partnersHref} className="text-slate-600 underline underline-offset-4">
-          Partners
-        </Link>
-
         {contactLinks.map(link => (
           <a
             key={link.href}
