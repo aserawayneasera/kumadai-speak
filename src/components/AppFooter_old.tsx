@@ -14,7 +14,7 @@ type AppFooterProps = {
 
 export default function AppFooter({
   appName,
-  creatorName = 'Wayne Asera',
+  creatorName = 'Anonymous Kuma',
   year = new Date().getFullYear(),
   aboutHref = '/about',
   contactHref = '/contact',

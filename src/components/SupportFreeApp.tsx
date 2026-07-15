@@ -23,7 +23,7 @@ export default function SupportFreeApp() {
               Support
             </a>
             <a
-              href="mailto:asera.wa@gmail.com?subject=Kumadai%20Speak%20feedback"
+              href="mailto:anonymous.kuma@icloud.com?subject=Kumadai%20Speak%20feedback"
               className="rounded-full border border-gray-200 bg-white/80 px-3 py-1.5 text-xs font-bold text-gray-500 no-underline transition hover:bg-gray-50"
             >
               Feedback

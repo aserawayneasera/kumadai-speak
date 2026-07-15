@@ -1,6 +1,6 @@
 import SponsorCard from '@/components/SponsorCard';
 
-const contactEmail = 'asera.wa@gmail.com';
+const contactEmail = 'anonymous.kuma@icloud.com';
 
 const packages = [
   ['Office license', 'From ¥2,000 / month', 'Custom phrase set for one office, clinic, school, or counter.'],
@@ -93,7 +93,7 @@ export default function PartnersPage() {
             <SponsorCard
               title="Custom phrase set for your office"
               description="This sample partner card leads to a custom page or consultation. It belongs on partner and resource pages, not inside the main speaking screen."
-              cta="Contact Wayne"
+              cta="Contact Anonymous Kuma"
               href={contactHref}
               note="Sponsor placements should stay away from buttons, speech controls, and urgent communication flows."
             />
@@ -133,7 +133,7 @@ export default function PartnersPage() {
                   href={contactHref}
                   className="inline-flex rounded-2xl bg-blue-700 px-5 py-3 text-sm font-black text-white no-underline shadow-sm hover:bg-blue-800"
                 >
-                  Email Wayne
+                  Email Anonymous Kuma
                 </a>
               </div>
             </section>

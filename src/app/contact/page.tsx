@@ -6,7 +6,7 @@ type ContactPageProps = {
 
 export default function ContactPage({ params }: ContactPageProps) {
   const homeHref = '/';
-  const emailHref = 'mailto:asera.wa@gmail.com?subject=Kumadai%20Speak%20feedback';
+  const emailHref = 'mailto:anonymous.kuma@icloud.com?subject=Kumadai%20Speak%20feedback';
 
   return (
     <main className="min-h-screen hk-page-bg px-5 py-8">
@@ -35,7 +35,7 @@ export default function ContactPage({ params }: ContactPageProps) {
                 href={emailHref}
                 className="mt-2 inline-block text-sm font-bold text-blue-700 no-underline"
               >
-                asera.wa@gmail.com
+                anonymous.kuma@icloud.com
               </a>
             </div>
 

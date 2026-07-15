@@ -1062,7 +1062,7 @@ function AboutPanel() {
         </div>
         <div className="space-y-3 p-4 text-sm leading-relaxed text-slate-700">
           <p>
-            Kumadai Tap & Speak was created and developed by Wayne Asera.
+            Kumadai Tap & Speak was created and developed by Anonymous Kuma.
           </p>
           <p>
             The app helps students communicate in places where clear Japanese matters: hospitals, ward offices, real estate offices, university counters, schools, transport, daily life and disasters.
