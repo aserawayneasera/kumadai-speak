@@ -1,6 +1,7 @@
 'use client';
 
-const SUPPORT_URL = 'https://buymeacoffee.com/wayneasera'
+// const SUPPORT_URL = 'https://buymeacoffee.com/wayneasera'
+const SUPPORT_URL = 'https://donate.stripe.com/9B64gA2jj1ptdNn2La2sM00';
 
 export default function SupportFreeApp() {
   return (
@@ -26,7 +27,7 @@ export default function SupportFreeApp() {
             Support
           </a>
           <a
-            href="mailto:anonymous.kuma@icloud.com?subject=Kumamoto%20Hello%20feedback"
+            href="mailto:asera.wa@gmail.com?subject=Kumamoto%20Hello%20feedback"
             className="rounded-full border border-gray-200 bg-white/80 px-3 py-1 text-xs font-bold text-gray-700 no-underline transition hover:bg-gray-100"
           >
             Feedback
