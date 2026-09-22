@@ -1,4 +1,4 @@
-# Kumadai Tap & Speak v1.1.3
+# Kumamoto Tap & Speak v1.1.3
 
 UX update for first-time and younger mobile users.
 

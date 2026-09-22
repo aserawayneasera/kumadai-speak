@@ -29,7 +29,7 @@ export default function PrivacyPage({ params }: PrivacyPageProps) {
             <section>
               <h2 className="font-bold text-gray-900">Who runs this app</h2>
               <p className="mt-1">
-                Kumadai Speak was created by Wayne Asera as a practical guide for new foreign residents, students, and visitors in Kumamoto.
+                Kumamoto Tap & Speak was created by Wayne Asera as a practical guide for new foreign residents, students, and visitors in Kumamoto.
               </p>
             </section>
 

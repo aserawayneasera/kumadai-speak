@@ -76,7 +76,7 @@ export default function PartnerApartmentTapSpeakPage({ params }: { params: { slu
         </div>
       </section>
 
-      <AppFooter appName="Kumadai Tap & Speak" />
+      <AppFooter appName="Kumamoto Tap & Speak" />
     </main>
   )
 }

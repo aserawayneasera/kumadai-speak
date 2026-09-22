@@ -10,7 +10,7 @@ const packages = [
 
 export default function PartnersPage() {
   const contactHref = `mailto:${contactEmail}?subject=${encodeURIComponent(
-    'Kumadai Tap & Speak partner inquiry',
+    'Kumamoto Tap & Speak partner inquiry',
   )}`;
 
   return (
@@ -33,7 +33,7 @@ export default function PartnersPage() {
                 Partners
               </p>
               <h1 className="mt-2 text-3xl font-black leading-tight">
-                Partner with Kumadai Tap & Speak
+                Partner with Kumamoto Tap & Speak
               </h1>
               <p className="mt-2 max-w-2xl text-sm leading-relaxed text-white/80">
                 Help international students and Japanese staff communicate better at

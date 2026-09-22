@@ -10,7 +10,7 @@ export default function HomePage() {
       <AppShell />
       <SupportFreeApp />
       {/* <AdSenseAd slot="4662267919" label="Advertisement" /> */}
-      <AppFooter appName='Kumadai Tap & Speak' />
+      <AppFooter appName='Kumamoto Tap & Speak' />
      
     </>
   );

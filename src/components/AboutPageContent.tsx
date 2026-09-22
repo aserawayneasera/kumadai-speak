@@ -21,7 +21,7 @@ type AboutPageContentProps = {
 
 export default function AboutPageContent({
   homeHref = '/',
-  appName = 'Kumadai Tap & Speak™',
+  appName = 'Kumamoto Tap & Speak™',
   appTagline = 'Two-way communication cards for international students and Japanese staff.',
   creatorName = 'Wayne Asera',
   creatorEmail = 'asera.wa@gmail.com',

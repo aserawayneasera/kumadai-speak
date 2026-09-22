@@ -1,4 +1,4 @@
-# Kumadai Tap & Speak Conversation Mode v1.1.2
+# Kumamoto Tap & Speak Conversation Mode v1.1.2
 
 Two-way communication cards for international students and Japanese staff.
 
@@ -22,14 +22,14 @@ Use it in any project:
 ```tsx
 <AppFooter appName="Kumamoto Hello" />
 <AppFooter appName="Kumamoto Gomi Guide" />
-<AppFooter appName="Kumadai Tap & Speak" />
+<AppFooter appName="Kumamoto Tap & Speak" />
 ```
 
 Optional future contact props:
 
 ```tsx
 <AppFooter
-  appName="Kumadai Tap & Speak"
+  appName="Kumamoto Tap & Speak"
   creatorName="Wayne Asera"
   linkedinUrl="https://www.linkedin.com/in/your-profile"
   githubUrl="https://github.com/your-username"

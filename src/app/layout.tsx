@@ -3,8 +3,8 @@ import './globals.css';
 import { Analytics } from '@vercel/analytics/next';
 
 export const metadata: Metadata = {
-  title: 'Kumadai Tap & Speak',
-  description: 'A Hello-style tap-to-speak communication app for Kumamoto University international students.',
+  title: 'Kumamoto Tap & Speak',
+  description: 'A tap-to-speak communication app for international students, residents, and visitors in Kumamoto.',
   manifest: '/manifest.json',
 };
 

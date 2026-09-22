@@ -340,7 +340,7 @@ export default function AppShell() {
         />
       )}
       {/* <SupportFreeApp />
-      <AppFooter appName="Kumadai Tap & Speak" /> */}
+      <AppFooter appName="Kumamoto Tap & Speak" /> */}
 
       <QuickReplay selectedPhrase={selectedPhrase} onReplay={replay} onOpenSlots={() => setSlotSheetOpen(true)} />
 
@@ -416,7 +416,7 @@ function HomeView({ onOpenCategory, onOpenStaff, onOpenMore }: { onOpenCategory:
   return (
     <div className="animate-fade-slide-up">
       <Header
-        title="Tap & Speak Kumadai"
+        title="Kumamoto Tap & Speak"
         subtitle="Open a card, let your phone speak Japanese, and show large text when talking is hard."
         right={<div className="animate-floaty rounded-3xl bg-white/15 px-3 py-2 text-center"><p className="text-3xl">🐻</p><p className="text-[10px] font-black">Kuma</p></div>}
       />
@@ -1055,14 +1055,14 @@ function AboutPanel() {
     <div className="space-y-4">
       <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
         <div className="hk-primary-bg p-4 text-white">
-          <p className="text-base font-black">About Kumadai Tap & Speak™</p>
+          <p className="text-base font-black">About Kumamoto Tap & Speak™</p>
           <p className="mt-1 text-xs leading-relaxed text-white/80">
             A two-way communication app for international students and Japanese staff.
           </p>
         </div>
         <div className="space-y-3 p-4 text-sm leading-relaxed text-slate-700">
           <p>
-            Kumadai Tap & Speak was created and developed by Wayne Asera.
+            Kumamoto Tap & Speak was created and developed by Wayne Asera.
           </p>
           <p>
             The app helps students communicate in places where clear Japanese matters: hospitals, ward offices, real estate offices, university counters, schools, transport, daily life and disasters.

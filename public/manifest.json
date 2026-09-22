@@ -1,7 +1,7 @@
 {
   "name": "Kumamoto Tap & Speak",
-  "short_name": "TapSpeak",
-  "description": "A Hello-style tap-to-speak communication app for Kumamoto University international students.",
+  "short_name": "KumaSpeak",
+  "description": "A tap-to-speak communication app for international students, residents, and visitors in Kumamoto.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#f8fafc",
