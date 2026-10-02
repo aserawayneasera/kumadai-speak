@@ -5,8 +5,8 @@ import type { Phrase } from '@/data/communicationBook';
 import { LANGUAGE_OPTIONS, type UnderstandingLanguage } from '@/lib/phraseDisplay';
 import { speakText, type SpeechSettings } from '@/lib/speech';
 import {
-  MAX_TRANSLATION_LENGTH, findExactTranslation, getTranslationReferences, searchTranslationReferences,
-  type TranslationLanguage, type TranslationReference, type TranslationResult, type TranslationTurn,
+  MAX_TRANSLATION_LENGTH, TRANSLATION_PROVIDER_LABELS, findExactTranslation, getTranslationReferences, isTranslationProvider, searchTranslationReferences,
+  type TranslationLanguage, type TranslationProvider, type TranslationReference, type TranslationResult, type TranslationServiceConfig, type TranslationTurn,
 } from '@/lib/translation';
 import { getTranslationCopy, NATIVE_LANGUAGE_NAMES, NATIVE_TALK_LABELS, type TranslationCopy } from '@/lib/translationCopy';
 import { useVoiceInput, type VoiceInputEngine } from '@/lib/useVoiceInput';
@@ -14,6 +14,7 @@ import { useVoiceInput, type VoiceInputEngine } from '@/lib/useVoiceInput';
 function errorMessage(code: string, copy: TranslationCopy) {
   const errors: Record<string, string> = {
     not_configured: copy.offline, no_voice: copy.noVoice, denied: copy.denied,
+    provider_unavailable: copy.providerUnavailable,
     no_speech: copy.noSpeech, timeout: copy.timeout, rate_limit: copy.rateLimit,
     too_long: copy.tooLong, speech_failed: copy.speechFailed,
     transcription_failed: copy.speechFailed, invalid_recording: copy.speechFailed,
@@ -46,7 +47,9 @@ export default function TranslationMode({ active, preferredLanguage, onLanguageC
   const [copied, setCopied] = useState<string | null>(null);
   const [show, setShow] = useState<TranslationTurn | null>(null);
   const [online, setOnline] = useState(true);
-  const [service, setService] = useState<{ translationEnabled: boolean; recordingEnabled: boolean } | null>(null);
+  const [service, setService] = useState<TranslationServiceConfig | null>(null);
+  const [provider, setProvider] = useState<TranslationProvider>('openai');
+  const providerPreference = useRef<TranslationProvider | null>(null);
   const locked = useRef(false);
   const requestId = useRef(0);
   const request = useRef<AbortController | null>(null);
@@ -63,6 +66,13 @@ export default function TranslationMode({ active, preferredLanguage, onLanguageC
     request.current = null;
     locked.current = false;
     setBusy(false);
+  }, []);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('kts-translation-provider');
+      if (isTranslationProvider(saved)) { providerPreference.current = saved; setProvider(saved); }
+    } catch { /* Translation works when browser storage is unavailable. */ }
   }, []);
 
   useEffect(() => {
@@ -97,8 +107,15 @@ export default function TranslationMode({ active, preferredLanguage, onLanguageC
     const timeout = setTimeout(() => controller.abort(), 8000);
     fetch('/api/translate', { cache: 'no-store', signal: controller.signal })
       .then(response => response.ok ? response.json() : Promise.reject())
-      .then(result => { if (!disposed) setService({ translationEnabled: result.translationEnabled === true, recordingEnabled: result.recordingEnabled === true }); })
-      .catch(() => { if (!disposed) setService({ translationEnabled: false, recordingEnabled: false }); })
+      .then(result => {
+        if (disposed) return;
+        const providers = { openai: result.providers?.openai === true, claude: result.providers?.claude === true };
+        const defaultProvider = isTranslationProvider(result.defaultProvider) ? result.defaultProvider : 'openai';
+        setService({ translationEnabled: providers.openai || providers.claude, recordingEnabled: result.recordingEnabled === true, defaultProvider, providers });
+        const saved = providerPreference.current;
+        setProvider(saved && providers[saved] ? saved : defaultProvider);
+      })
+      .catch(() => { if (!disposed) setService({ translationEnabled: false, recordingEnabled: false, defaultProvider: 'openai', providers: { openai: false, claude: false } }); })
       .finally(() => clearTimeout(timeout));
     return () => { disposed = true; clearTimeout(timeout); controller.abort(); };
   }, [active, online, stopTranslation]);
@@ -130,17 +147,19 @@ export default function TranslationMode({ active, preferredLanguage, onLanguageC
       let result: TranslationResult | undefined = findExactTranslation(text, from, to, references);
       if (!result) {
         if (!online || service?.translationEnabled === false) throw new Error('not_configured');
+        if (service && !service.providers[provider]) throw new Error('provider_unavailable');
         setBusy(true);
         const controller = new AbortController();
         request.current = controller;
         timeout = setTimeout(() => controller.abort(), 40_000);
         const response = await fetch('/api/translate', {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text, from, to }), signal: controller.signal,
+          body: JSON.stringify({ text, from, to, provider }), signal: controller.signal,
         });
         const data = await response.json();
         if (!response.ok) throw new Error(data.code || 'translation_failed');
         if (typeof data.text !== 'string' || !data.text.trim() || !['phrasebook', 'online'].includes(data.source)) throw new Error('translation_failed');
+        if (data.source === 'online' && data.provider !== provider) throw new Error('translation_failed');
         result = data as TranslationResult;
       }
       if (id !== requestId.current) return;
@@ -162,7 +181,7 @@ export default function TranslationMode({ active, preferredLanguage, onLanguageC
         setBusy(false);
       }
     }
-  }, [active, autoRead, left, online, play, references, right, service]);
+  }, [active, autoRead, left, online, play, provider, references, right, service]);
 
   const voice = useVoiceInput({
     active, recordingEnabled: service?.recordingEnabled === true && online,
@@ -227,6 +246,16 @@ export default function TranslationMode({ active, preferredLanguage, onLanguageC
         </div>
 
         <div className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
+          <label className="mb-4 block text-xs font-bold text-slate-600">{copy.provider}
+            <select aria-label={copy.provider} value={provider} disabled={disabled || !service?.translationEnabled} onChange={event => {
+              const next = event.target.value;
+              if (!isTranslationProvider(next)) return;
+              setProvider(next); providerPreference.current = next; setError('');
+              try { localStorage.setItem('kts-translation-provider', next); } catch { /* Optional device preference. */ }
+            }} className="mt-2 min-h-[44px] w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-base font-bold text-slate-800 disabled:opacity-60">
+              {(['openai', 'claude'] as const).map(item => <option key={item} value={item} disabled={!service?.providers[item]}>{TRANSLATION_PROVIDER_LABELS[item]}{service && !service.providers[item] ? ` (${copy.unavailable})` : ''}</option>)}
+            </select>
+          </label>
           <div className="grid grid-cols-[minmax(0,1fr)_44px_minmax(0,1fr)] items-end gap-1">
             <label className="min-w-0 text-xs font-bold text-slate-600">{copy.first}
               <select aria-label={copy.first} value={left} disabled={disabled} onChange={event => {
@@ -308,7 +337,7 @@ export default function TranslationMode({ active, preferredLanguage, onLanguageC
           </div>
         </details>
         {(!online || service?.translationEnabled === false) && <p className="rounded-2xl bg-slate-100 p-3 text-xs leading-relaxed text-slate-600">{copy.offline}</p>}
-        <p className="px-1 text-xs leading-relaxed text-slate-500">{copy.privacy} <a href="/privacy" className="font-bold text-teal-700 underline">{copy.privacyLink}</a></p>
+        <p className="px-1 text-xs leading-relaxed text-slate-500">{copy.privacy.replace('{provider}', TRANSLATION_PROVIDER_LABELS[provider])} <a href="/privacy" className="font-bold text-teal-700 underline">{copy.privacyLink}</a></p>
       </main>
       {show && <TranslationShow turn={show} copy={copy} onClose={() => setShow(null)} onPlay={() => play(show)} />}
     </section>
@@ -320,7 +349,7 @@ function TranslationCard({ turn, copy, copied, disabled, onPlay, onCopy, onShow,
   onPlay: () => void; onCopy: () => void; onShow: () => void; onEdit: () => void;
 }) {
   return <article className="rounded-3xl border border-teal-200 bg-white p-4 shadow-sm" aria-label={copy.result}>
-    <div className="flex flex-wrap items-center justify-between gap-2 text-xs font-bold"><span className="text-slate-600">{NATIVE_LANGUAGE_NAMES[turn.from]} → {NATIVE_LANGUAGE_NAMES[turn.to]}</span><span className="rounded-full bg-teal-50 px-2 py-1 text-teal-800">{turn.source === 'phrasebook' ? copy.phrasebook : copy.online}</span></div>
+    <div className="flex flex-wrap items-center justify-between gap-2 text-xs font-bold"><span className="text-slate-600">{NATIVE_LANGUAGE_NAMES[turn.from]} → {NATIVE_LANGUAGE_NAMES[turn.to]}</span><span className="rounded-full bg-teal-50 px-2 py-1 text-teal-800">{turn.source === 'phrasebook' ? copy.phrasebook : turn.provider ? `${copy.online} · ${TRANSLATION_PROVIDER_LABELS[turn.provider]}` : copy.online}</span></div>
     <p lang={turn.from} dir="auto" className="mt-3 whitespace-pre-wrap break-words text-sm leading-relaxed text-slate-500">{turn.original}</p>
     <p lang={turn.to} dir="auto" className="mt-3 whitespace-pre-wrap break-words text-2xl font-bold leading-relaxed text-slate-900" data-translation-text>{turn.text}</p>
     <div className="mt-4 grid grid-cols-4 gap-1">

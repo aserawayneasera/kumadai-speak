@@ -8,6 +8,14 @@ import {
 } from '@/lib/phraseDisplay';
 
 export type TranslationLanguage = UnderstandingLanguage;
+export type TranslationProvider = 'openai' | 'claude';
+export const TRANSLATION_PROVIDER_LABELS: Record<TranslationProvider, string> = { openai: 'OpenAI', claude: 'Claude' };
+export interface TranslationServiceConfig {
+  translationEnabled: boolean;
+  recordingEnabled: boolean;
+  defaultProvider: TranslationProvider;
+  providers: Record<TranslationProvider, boolean>;
+}
 export const MAX_TRANSLATION_LENGTH = 1000;
 export const MAX_RECORDING_BYTES = 3 * 1024 * 1024;
 
@@ -15,6 +23,7 @@ export interface TranslationResult {
   text: string;
   source: 'phrasebook' | 'online';
   referenceId?: string;
+  provider?: TranslationProvider;
 }
 
 export interface TranslationTurn extends TranslationResult {
@@ -36,6 +45,10 @@ export interface TranslationReference {
 
 export function isTranslationLanguage(value: unknown): value is TranslationLanguage {
   return LANGUAGE_OPTIONS.some(language => language.id === value);
+}
+
+export function isTranslationProvider(value: unknown): value is TranslationProvider {
+  return value === 'openai' || value === 'claude';
 }
 
 // Preserve internal punctuation, signs, numbers and word boundaries. Fuzzy

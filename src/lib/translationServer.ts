@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto';
+import { isTranslationProvider, type TranslationProvider, type TranslationServiceConfig } from './translation';
 
 // This is an instance-local burst limit. A hosting firewall should enforce
 // shared quotas on public/serverless deployments (see the setup guide).
@@ -62,14 +63,15 @@ export async function readTranslationBody(request: Request, maxBytes: number) {
   return body;
 }
 
-export async function fetchTranslationProvider(path: string, init: RequestInit, signal: AbortSignal) {
+export async function fetchTranslationProvider(path: string, init: RequestInit, signal: AbortSignal, provider: TranslationProvider = 'openai') {
   const controller = new AbortController();
   const abort = () => controller.abort();
   signal.addEventListener('abort', abort, { once: true });
   if (signal.aborted) controller.abort();
   const timeout = setTimeout(abort, 35_000);
   try {
-    const response = await fetch(`https://api.openai.com/v1/${path}`, { ...init, signal: controller.signal, cache: 'no-store' });
+    const url = provider === 'claude' ? 'https://api.anthropic.com/v1/messages' : `https://api.openai.com/v1/${path}`;
+    const response = await fetch(url, { ...init, signal: controller.signal, cache: 'no-store' });
     const data = response.ok ? await response.json() : null;
     return { ok: response.ok, status: response.status, data };
   } finally {
@@ -78,10 +80,19 @@ export async function fetchTranslationProvider(path: string, init: RequestInit, 
   }
 }
 
-export function translationServiceEnabled() {
-  return Boolean(process.env.OPENAI_API_KEY?.trim()) && process.env.KUMASPEAK_TRANSLATION_ENABLED !== 'false';
+export function translationServiceEnabled(provider: TranslationProvider) {
+  const key = provider === 'claude' ? process.env.ANTHROPIC_API_KEY : process.env.OPENAI_API_KEY;
+  return Boolean(key?.trim()) && process.env.KUMASPEAK_TRANSLATION_ENABLED !== 'false';
+}
+
+export function translationServiceConfig(): TranslationServiceConfig {
+  const providers = { openai: translationServiceEnabled('openai'), claude: translationServiceEnabled('claude') };
+  const preference = process.env.KUMASPEAK_TRANSLATION_PROVIDER?.trim();
+  const defaultProvider = isTranslationProvider(preference) && providers[preference]
+    ? preference : providers.openai ? 'openai' : providers.claude ? 'claude' : 'openai';
+  return { translationEnabled: providers.openai || providers.claude, recordingEnabled: transcriptionServiceEnabled(), defaultProvider, providers };
 }
 
 export function transcriptionServiceEnabled() {
-  return translationServiceEnabled() && process.env.KUMASPEAK_RECORDING_ENABLED !== 'false';
+  return translationServiceEnabled('openai') && process.env.KUMASPEAK_RECORDING_ENABLED !== 'false';
 }

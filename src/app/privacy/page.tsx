@@ -36,7 +36,7 @@ export default function PrivacyPage({ params }: PrivacyPageProps) {
             <section>
               <h2 className="font-bold text-gray-900">Information stored on your device</h2>
               <p className="mt-1">
-                The app may save your checklist progress, notes, language choice, profile details, and recently opened guide sections in your browser storage. This helps the app remember your progress on the same device.
+                The app may save your checklist progress, notes, language choice, translation service choice, profile details, and recently opened guide sections in your browser storage. This helps the app remember your progress on the same device.
               </p>
               <p className="mt-2 text-xs text-gray-600">
                 You can clear this data by using your browser settings or clearing site data for this website.
@@ -63,7 +63,7 @@ export default function PrivacyPage({ params }: PrivacyPageProps) {
             <section>
               <h2 className="font-bold text-gray-900">Voice and typed translation mode</h2>
               <p className="mt-1">
-                The Translate mode requests microphone access only after you press a speaking button. Browser dictation uses your browser&apos;s speech recognition service, which processes audio under its own terms. Online recording sends a short audio recording through this app to OpenAI for transcription. Online translation sends the current sentence and relevant built-in phrase examples to OpenAI. API responses use store: false. Provider processing and retention follow OpenAI&apos;s API data policies.
+                The Translate mode requests microphone access only after you press a speaking button. Browser dictation uses your browser&apos;s speech recognition service, which processes audio under its own terms. Online recording sends a short audio recording through this app to OpenAI for transcription, even when Claude is selected for translation. Online translation sends the current sentence and relevant built-in phrase examples to your selected service, OpenAI or Claude from Anthropic. OpenAI translation requests use store: false. Provider processing and retention follow the selected provider&apos;s API data policies.
               </p>
               <p className="mt-2">
                 Exact matches with available saved translations are handled in your browser. Conversation text is kept in page memory, including when you switch app tabs. New conversation or a page refresh clears this history. The app does not save recordings or conversation history to browser storage. Microphone capture stops when you finish, cancel, leave Translate, or hide the page. Read-aloud uses your device or browser speech service.
