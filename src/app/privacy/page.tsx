@@ -23,7 +23,7 @@ export default function PrivacyPage({ params }: PrivacyPageProps) {
           <h1 className="mt-2 text-3xl font-bold text-gray-900">
             Privacy Policy
           </h1>
-          <p className="mt-2 text-xs text-gray-500">Last updated: June 29, 2026</p>
+          <p className="mt-2 text-xs text-gray-500">Last updated: October 2, 2026</p>
 
           <div className="mt-6 space-y-5 text-sm leading-relaxed text-gray-700">
             <section>
@@ -57,6 +57,16 @@ export default function PrivacyPage({ params }: PrivacyPageProps) {
               <h2 className="font-bold text-gray-900">Translation</h2>
               <p className="mt-1">
                 The app may use Google Translate or browser translation features for some languages. Translation tools may process text through their own systems. Use official Japanese or English sources for procedures, deadlines, legal rules, health, safety, money, tax, or visa matters.
+              </p>
+            </section>
+
+            <section>
+              <h2 className="font-bold text-gray-900">Voice and typed translation mode</h2>
+              <p className="mt-1">
+                The Translate mode requests microphone access only after you press a speaking button. Browser dictation uses your browser&apos;s speech recognition service, which processes audio under its own terms. Online recording sends a short audio recording through this app to OpenAI for transcription. Online translation sends the current sentence and relevant built-in phrase examples to OpenAI. API responses use store: false. Provider processing and retention follow OpenAI&apos;s API data policies.
+              </p>
+              <p className="mt-2">
+                Exact matches with available saved translations are handled in your browser. Conversation text is kept in page memory, including when you switch app tabs. New conversation or a page refresh clears this history. The app does not save recordings or conversation history to browser storage. Microphone capture stops when you finish, cancel, leave Translate, or hide the page. Read-aloud uses your device or browser speech service.
               </p>
             </section>
 

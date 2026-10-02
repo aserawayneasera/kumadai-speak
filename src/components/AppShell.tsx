@@ -7,6 +7,7 @@ import CategoryCard from './CategoryCard';
 import PhonePreview from './PhonePreview';
 import SlotPicker from './SlotPicker';
 import PhraseCard from './PhraseCard';
+import TranslationMode from './TranslationMode';
 import AppFooter from './AppFooter';
 import type { AppRoute, MainTab } from './types';
 import {
@@ -135,45 +136,66 @@ function loadCustomPhrases() {
 }
 
 export default function AppShell() {
-  const [route, setRoute] = useState<AppRoute>(() => getInitialRoute());
+  const [route, setRoute] = useState<AppRoute>(DEFAULT_ROUTE);
   const [selectedPhrase, setSelectedPhrase] = useState<Phrase>(() => phraseDecks[0].phrases[0]);
   const [selections, setSelections] = useState<Partial<Record<SlotKey, SlotOption>>>(() => defaultSelections(phraseDecks[0].phrases[0]));
-  const [settings, setSettings] = useState<SpeechSettings>(() => getInitialSettings());
-  const [preferredLanguage, setPreferredLanguage] = useState<UnderstandingLanguage>(() => getInitialLanguage());
+  const [settings, setSettings] = useState<SpeechSettings>({ rate: 0.88, pitch: 1 });
+  const [preferredLanguage, setPreferredLanguage] = useState<UnderstandingLanguage>('en');
   const [speaking, setSpeaking] = useState(false);
   const [copied, setCopied] = useState(false);
   const [noiseMode, setNoiseMode] = useState(false);
   const [fullscreen, setFullscreen] = useState(false);
   const [slotSheetOpen, setSlotSheetOpen] = useState(false);
-  const [favorites, setFavorites] = useState<string[]>(() => loadStringList('kts-favorites'));
-  const [recents, setRecents] = useState<string[]>(() => loadStringList('kts-recents'));
-  const [customPhrases, setCustomPhrases] = useState<CustomPhrase[]>(() => loadCustomPhrases());
+  const [favorites, setFavorites] = useState<string[]>([]);
+  const [recents, setRecents] = useState<string[]>([]);
+  const [customPhrases, setCustomPhrases] = useState<CustomPhrase[]>([]);
+  const [storageReady, setStorageReady] = useState(false);
 
   const allPhraseList = useMemo(() => [...getAllPhrases(), ...quickBuilders, ...customPhrases], [customPhrases]);
 
   useEffect(() => {
+    // Restore browser state after the first render so translated menus and
+    // #tab=translate links match the server-rendered HTML during hydration.
+    const restoredRoute = getInitialRoute();
+    setRoute(restoredRoute);
+    setSettings(getInitialSettings());
+    setPreferredLanguage(getInitialLanguage());
+    setFavorites(loadStringList('kts-favorites'));
+    setRecents(loadStringList('kts-recents'));
+    setCustomPhrases(loadCustomPhrases());
+    window.history.replaceState({ ...window.history.state, appRoute: restoredRoute }, '', makeHash(restoredRoute));
+    setStorageReady(true);
+  }, []);
+
+  useEffect(() => {
+    if (!storageReady) return;
     window.sessionStorage.setItem('kts-route', JSON.stringify(route));
-  }, [route]);
+  }, [route, storageReady]);
 
   useEffect(() => {
+    if (!storageReady) return;
     window.localStorage.setItem('kts-speech', JSON.stringify(settings));
-  }, [settings]);
+  }, [settings, storageReady]);
 
   useEffect(() => {
+    if (!storageReady) return;
     window.localStorage.setItem('kts-understand-language', preferredLanguage);
-  }, [preferredLanguage]);
+  }, [preferredLanguage, storageReady]);
 
   useEffect(() => {
+    if (!storageReady) return;
     window.localStorage.setItem('kts-favorites', JSON.stringify(favorites));
-  }, [favorites]);
+  }, [favorites, storageReady]);
 
   useEffect(() => {
+    if (!storageReady) return;
     window.localStorage.setItem('kts-recents', JSON.stringify(recents));
-  }, [recents]);
+  }, [recents, storageReady]);
 
   useEffect(() => {
+    if (!storageReady) return;
     window.localStorage.setItem('kts-custom-phrases', JSON.stringify(customPhrases));
-  }, [customPhrases]);
+  }, [customPhrases, storageReady]);
 
   useEffect(() => {
     const current = window.history.state as { appRoute?: AppRoute } | null;
@@ -251,7 +273,30 @@ export default function AppShell() {
 
   return (
     <div className={`min-h-screen bg-slate-50 pb-28 ${noiseMode ? 'text-[17px]' : ''}`}>
-      {route.tab === 'home' && <HomeView onOpenCategory={categoryId => navigate({ tab: 'speak', categoryId })} onOpenStaff={categoryId => navigate({ tab: 'staff', categoryId })} onOpenMore={(panel) => navigate({ tab: 'more', morePanel: panel })} />}
+      {route.tab === 'home' && <HomeView onOpenCategory={categoryId => navigate({ tab: 'speak', categoryId })} onOpenStaff={categoryId => navigate({ tab: 'staff', categoryId })} onOpenMore={(panel) => navigate({ tab: 'more', morePanel: panel })} onOpenTranslate={() => navigate({ tab: 'translate' })} />}
+      <TranslationMode
+        active={route.tab === 'translate'}
+        preferredLanguage={preferredLanguage}
+        onLanguageChange={setPreferredLanguage}
+        settings={settings}
+        customPhrases={customPhrases}
+        onBack={() => navigate({ tab: 'speak', categoryId: activeCategoryId })}
+        onOpenPhrase={id => {
+          const phrase = allPhraseList.find(item => item.id === id);
+          if (!phrase) return;
+          selectPhrase(phrase, false);
+          if (quickBuilders.some(item => item.id === id)) {
+            navigate({ tab: 'more', morePanel: 'builder' });
+            return;
+          }
+          const deck = phraseDecks.find(item => item.phrases.some(card => card.id === id));
+          navigate({
+            tab: phrase.role === 'student' ? 'speak' : 'staff',
+            categoryId: deck?.categoryId ?? customPhrases.find(item => item.id === id)?.categoryId ?? 'daily',
+            deckId: deck?.id, roleFilter: phrase.role,
+          });
+        }}
+      />
       {route.tab === 'speak' && (
         <ConversationView
           mode="student"
@@ -342,7 +387,7 @@ export default function AppShell() {
       {/* <SupportFreeApp />
       <AppFooter appName="Kumamoto Tap & Speak" /> */}
 
-      <QuickReplay selectedPhrase={selectedPhrase} onReplay={replay} onOpenSlots={() => setSlotSheetOpen(true)} />
+      {route.tab !== 'translate' && <QuickReplay selectedPhrase={selectedPhrase} onReplay={replay} onOpenSlots={() => setSlotSheetOpen(true)} />}
 
       {slotSheetOpen && selectedPhrase.slots?.length ? (
         <SlotBottomSheet phrase={selectedPhrase} selections={selections} onSelect={selectSlot} onClose={() => setSlotSheetOpen(false)} />
@@ -400,7 +445,7 @@ function LanguageStrip({ preferredLanguage, onLanguageChange }: { preferredLangu
   );
 }
 
-function HomeView({ onOpenCategory, onOpenStaff, onOpenMore }: { onOpenCategory: (categoryId: string) => void; onOpenStaff: (categoryId: string) => void; onOpenMore: (panel: AppRoute['morePanel']) => void }) {
+function HomeView({ onOpenCategory, onOpenStaff, onOpenMore, onOpenTranslate }: { onOpenCategory: (categoryId: string) => void; onOpenStaff: (categoryId: string) => void; onOpenMore: (panel: AppRoute['morePanel']) => void; onOpenTranslate: () => void }) {
   const topCards = [
     { icon: '🏥', title: 'Hospital or clinic', desc: 'Reception, symptoms, tests, payment and pharmacy.', categoryId: 'hospital' },
     { icon: '🏛️', title: 'Ward office', desc: 'Forms, address, insurance, pension and official procedures.', categoryId: 'public' },
@@ -422,6 +467,11 @@ function HomeView({ onOpenCategory, onOpenStaff, onOpenMore }: { onOpenCategory:
       />
 
       <main className="mx-auto max-w-md px-4 py-4 space-y-4">
+        <button type="button" onClick={onOpenTranslate} className="flex w-full items-center gap-4 rounded-3xl border border-teal-200 bg-white p-4 text-left shadow-sm">
+          <span aria-hidden="true" className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-teal-50 text-3xl">🎙️</span>
+          <span><span className="block text-base font-black text-teal-800">Talk or type to translate</span><span className="mt-1 block text-xs leading-relaxed text-slate-600">Use your own words. Translate both ways on one phone.</span></span>
+          <span aria-hidden="true" className="ml-auto text-lg text-teal-700">→</span>
+        </button>
         <section className="overflow-hidden rounded-[2rem] border border-teal-200 bg-white shadow-sm">
           <div className="hk-primary-bg p-5 text-white">
             <p className="text-xs font-black uppercase tracking-wide text-white/70">Start in one minute</p>

@@ -1,4 +1,4 @@
-export type MainTab = 'home' | 'speak' | 'staff' | 'saved' | 'more';
+export type MainTab = 'home' | 'speak' | 'staff' | 'saved' | 'more' | 'translate';
 
 export interface AppRoute {
   tab: MainTab;
@@ -10,4 +10,3 @@ export interface AppRoute {
   morePanel?: 'custom' | 'builder' | 'words' | 'settings' | 'help' | 'about';
   savedKind?: 'favorites' | 'recent' | 'custom';
 }
-
