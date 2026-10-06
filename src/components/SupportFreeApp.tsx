@@ -27,7 +27,7 @@ export default function SupportFreeApp() {
             Support
           </a>
           <a
-            href="mailto:asera.wa@gmail.com?subject=Kumamoto%20Hello%20feedback"
+            href="mailto:asera.wa@gmail.com?subject=Kumamoto%20Tap%20&%20Speak%20feedback"
             className="rounded-full border border-gray-200 bg-white/80 px-3 py-1 text-xs font-bold text-gray-700 no-underline transition hover:bg-gray-100"
           >
             Feedback
