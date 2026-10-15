@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
 import BottomNav from './BottomNav';
+import { AppearanceControl } from './Appearance';
+import { useModalFocus } from '@/lib/useModalFocus';
 import Header from './Header';
 import CategoryCard from './CategoryCard';
 import PhonePreview from './PhonePreview';
@@ -210,11 +212,11 @@ export default function AppShell() {
   }, []);
 
   const navigate = useCallback((next: AppRoute) => {
-    setRoute(current => {
-      if (routeKey(current) === routeKey(next)) return current;
-      window.history.pushState({ appRoute: next }, '', makeHash(next));
-      return next;
-    });
+    const current = (window.history.state as { appRoute?: AppRoute } | null)?.appRoute;
+    if (current && routeKey(current) === routeKey(next)) return;
+    // A state updater must not push history: React can evaluate it more than once.
+    window.history.pushState({ appRoute: next }, '', makeHash(next));
+    setRoute(next);
   }, []);
 
   const speak = useCallback((phrase: Phrase, nextSelections: Partial<Record<SlotKey, SlotOption>>) => {
@@ -272,8 +274,8 @@ export default function AppShell() {
   const activeCategoryId = route.categoryId ?? selectedCategoryId(selectedPhrase, customPhrases) ?? 'hospital';
 
   return (
-    <div className={`min-h-screen bg-slate-50 pb-28 ${noiseMode ? 'text-[17px]' : ''}`}>
-      {route.tab === 'home' && <HomeView onOpenCategory={categoryId => navigate({ tab: 'speak', categoryId })} onOpenStaff={categoryId => navigate({ tab: 'staff', categoryId })} onOpenMore={(panel) => navigate({ tab: 'more', morePanel: panel })} onOpenTranslate={() => navigate({ tab: 'translate' })} />}
+    <div className={`kuma-speak-shell min-h-screen bg-slate-50 pb-28 ${noiseMode ? 'text-[17px]' : ''}`}>
+      {route.tab === 'home' && <HomeView language={preferredLanguage} onOpenCategory={categoryId => navigate({ tab: 'speak', categoryId })} onOpenStaff={categoryId => navigate({ tab: 'staff', categoryId })} onOpenMore={(panel) => navigate({ tab: 'more', morePanel: panel })} onOpenTranslate={() => navigate({ tab: 'translate' })} />}
       <TranslationMode
         active={route.tab === 'translate'}
         preferredLanguage={preferredLanguage}
@@ -387,7 +389,7 @@ export default function AppShell() {
       {/* <SupportFreeApp />
       <AppFooter appName="Kumamoto Tap & Speak" /> */}
 
-      {route.tab !== 'translate' && <QuickReplay selectedPhrase={selectedPhrase} onReplay={replay} onOpenSlots={() => setSlotSheetOpen(true)} />}
+      {route.tab !== 'translate' && route.tab !== 'home' && <QuickReplay selectedPhrase={selectedPhrase} onReplay={replay} onOpenSlots={() => setSlotSheetOpen(true)} />}
 
       {slotSheetOpen && selectedPhrase.slots?.length ? (
         <SlotBottomSheet phrase={selectedPhrase} selections={selections} onSelect={selectSlot} onClose={() => setSlotSheetOpen(false)} />
@@ -405,7 +407,7 @@ export default function AppShell() {
         />
       )}
 
-      <BottomNav active={route.tab} onChange={changeTab} />
+      <BottomNav active={route.tab} onChange={changeTab} language={preferredLanguage} />
     </div>
   );
 }
@@ -418,7 +420,7 @@ function selectedCategoryId(phrase: Phrase, customPhrases: CustomPhrase[]) {
 
 function StickyPhoneScreen({ children }: { children: ReactNode }) {
   return (
-    <div className="sticky top-0 z-30 -mx-4 bg-slate-50/95 px-4 py-3 backdrop-blur supports-[backdrop-filter]:bg-slate-50/80">
+    <div className="kuma-conversation-preview sticky top-0 z-30 -mx-4 bg-slate-50/95 px-4 py-3 backdrop-blur supports-[backdrop-filter]:bg-slate-50/80">
       {children}
     </div>
   );
@@ -445,7 +447,7 @@ function LanguageStrip({ preferredLanguage, onLanguageChange }: { preferredLangu
   );
 }
 
-function HomeView({ onOpenCategory, onOpenStaff, onOpenMore, onOpenTranslate }: { onOpenCategory: (categoryId: string) => void; onOpenStaff: (categoryId: string) => void; onOpenMore: (panel: AppRoute['morePanel']) => void; onOpenTranslate: () => void }) {
+function HomeView({ onOpenCategory, onOpenStaff, onOpenMore, onOpenTranslate, language }: { onOpenCategory: (categoryId: string) => void; onOpenStaff: (categoryId: string) => void; onOpenMore: (panel: AppRoute['morePanel']) => void; onOpenTranslate: () => void; language: UnderstandingLanguage }) {
   const topCards = [
     { icon: '🏥', title: 'Hospital or clinic', desc: 'Reception, symptoms, tests, payment and pharmacy.', categoryId: 'hospital' },
     { icon: '🏛️', title: 'Ward office', desc: 'Forms, address, insurance, pension and official procedures.', categoryId: 'public' },
@@ -461,9 +463,10 @@ function HomeView({ onOpenCategory, onOpenStaff, onOpenMore, onOpenTranslate }: 
   return (
     <div className="animate-fade-slide-up">
       <Header
+        language={language}
         title="Kumamoto Tap & Speak"
         subtitle="Open a card, let your phone speak Japanese, and show large text when talking is hard."
-        right={<div className="animate-floaty rounded-3xl bg-white/15 px-3 py-2 text-center"><p className="text-3xl">🐻</p><p className="text-[10px] font-black">Kuma</p></div>}
+        right={<div className="animate-floaty min-w-14 shrink-0 rounded-3xl bg-white/15 px-3 py-2 text-center"><p className="text-3xl">🐻</p><p className="text-[10px] font-black">Kuma</p></div>}
       />
 
       <main className="mx-auto max-w-md px-4 py-4 space-y-4">
@@ -524,7 +527,7 @@ function HomeView({ onOpenCategory, onOpenStaff, onOpenMore, onOpenTranslate }: 
 
         <section>
           <p className="mb-2 text-xs font-black uppercase tracking-wide text-slate-500">All situations</p>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="kuma-situations-grid grid grid-cols-2 gap-3">
             {categories.map(category => <CategoryCard key={category.id} category={category} onClick={() => onOpenCategory(category.id)} />)}
           </div>
         </section>
@@ -619,7 +622,7 @@ function ConversationView({ mode, route, navigate, customPhrases, selectedPhrase
 
   return (
     <div className="animate-fade-slide-up">
-      <Header title={title} subtitle={subtitle} />
+      <Header title={title} subtitle={subtitle} language={preferredLanguage} />
       <main className="mx-auto max-w-md px-4 py-4 space-y-4">
         <StickyPhoneScreen>
           <PhonePreview
@@ -691,7 +694,7 @@ function ConversationView({ mode, route, navigate, customPhrases, selectedPhrase
         )}
 
         <div className="rounded-3xl border border-slate-200 bg-white p-3 shadow-sm">
-          <input value={search} onChange={event => setSearch(event.target.value)} placeholder="Search English, Japanese, romaji..." className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none focus:border-blue-400" />
+          <input type="search" aria-label="Search phrases" value={search} onChange={event => setSearch(event.target.value)} placeholder="Search English, Japanese, romaji..." className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none focus:border-blue-400" />
           {mode === 'staff' && (
             <div className="mt-2 grid grid-cols-3 gap-1">
               {(['staff', 'info', 'all'] as RoleFilter[]).map(role => (
@@ -727,9 +730,10 @@ function StaffHandover({ preferredLanguage }: { preferredLanguage: Understanding
 }
 
 function SlotBottomSheet({ phrase, selections, onSelect, onClose }: { phrase: Phrase; selections: Partial<Record<SlotKey, SlotOption>>; onSelect: (key: SlotKey, option: SlotOption) => void; onClose: () => void }) {
+  const modal = useModalFocus(onClose);
   return (
     <div className="fixed inset-0 z-50 flex items-end bg-slate-950/40" onClick={onClose}>
-      <div className="max-h-[75vh] w-full overflow-y-auto rounded-t-[2rem] bg-white p-4 shadow-2xl" onClick={event => event.stopPropagation()}>
+      <div ref={modal} tabIndex={-1} role="dialog" aria-modal="true" aria-label="Choose words for the blank" className="max-h-[75dvh] w-full overflow-y-auto rounded-t-[2rem] bg-white p-4 shadow-2xl" onClick={event => event.stopPropagation()}>
         <div className="mx-auto mb-3 h-1.5 w-14 rounded-full bg-slate-200" />
         <div className="mb-3 flex items-start justify-between gap-3">
           <div>
@@ -745,10 +749,11 @@ function SlotBottomSheet({ phrase, selections, onSelect, onClose }: { phrase: Ph
 }
 
 function FullscreenShow({ phrase, selections, preferredLanguage, onClose, onReplay, onCopy, copied }: { phrase: Phrase; selections: Partial<Record<SlotKey, SlotOption>>; preferredLanguage: UnderstandingLanguage; onClose: () => void; onReplay: () => void; onCopy: () => void; copied: boolean }) {
+  const modal = useModalFocus(onClose);
   const text = getPhraseDisplayText(phrase, selections, preferredLanguage);
   const sub = getPhraseSubText(phrase, selections, preferredLanguage);
   return (
-    <div className="fixed inset-0 z-[60] flex flex-col bg-slate-950 text-white">
+    <div ref={modal} tabIndex={-1} role="dialog" aria-modal="true" aria-label="Show mode" className="fixed inset-0 z-[60] flex flex-col bg-slate-950 text-white">
       <div className="flex items-center justify-between gap-3 border-b border-white/10 p-4">
         <div>
           <p className="text-xs font-black uppercase tracking-wide text-white/45">Show mode</p>
@@ -756,7 +761,7 @@ function FullscreenShow({ phrase, selections, preferredLanguage, onClose, onRepl
         </div>
         <button type="button" onClick={onClose} className="rounded-full bg-white px-4 py-2 text-xs font-black text-slate-900">Close</button>
       </div>
-      <div className="flex flex-1 items-center justify-center p-6 text-center">
+      <div className="flex min-h-0 flex-1 items-center justify-center overflow-y-auto p-6 text-center">
         <div>
           <p className="break-words text-4xl font-black leading-tight sm:text-6xl">{text}</p>
           <p className="mt-6 text-base font-semibold leading-relaxed text-white/65">{sub}</p>
@@ -772,7 +777,7 @@ function FullscreenShow({ phrase, selections, preferredLanguage, onClose, onRepl
 
 function QuickReplay({ selectedPhrase, onReplay, onOpenSlots }: { selectedPhrase: Phrase; onReplay: () => void; onOpenSlots: () => void }) {
   return (
-    <div className="fixed bottom-24 right-4 z-40 flex flex-col items-end gap-2">
+    <div className="kuma-quick-replay fixed bottom-24 right-4 z-40 flex flex-col items-end gap-2">
       {selectedPhrase.slots?.length ? (
         <button type="button" onClick={onOpenSlots} className="rounded-full bg-blue-600 px-4 py-3 text-xs font-black text-white shadow-xl transition hover:scale-105">
           🧩 Blanks
@@ -802,7 +807,7 @@ function SavedView({ selectedKind, navigate, allPhrases, customPhrases, favorite
   const phrases = ids.map(id => allPhrases.find(phrase => phrase.id === id)).filter(Boolean) as Phrase[];
   return (
     <div className="animate-fade-slide-up">
-      <Header title="Saved" subtitle="Favorites, recent phrases and cards you created." />
+      <Header title="Saved" subtitle="Favorites, recent phrases and cards you created." language={preferredLanguage} />
       <main className="mx-auto max-w-md px-4 py-4 space-y-4">
         <div className="grid grid-cols-3 gap-2">
           {(['favorites', 'recent', 'custom'] as SavedKind[]).map(kind => (
@@ -862,7 +867,7 @@ function MoreView({ route, navigate, selectedPhrase, selections, preferredLangua
   const panel = route.morePanel ?? 'custom';
   return (
     <div className="animate-fade-slide-up">
-      <Header title="More" subtitle="Custom cards, quick builders, vocabulary, settings, help and about." />
+      <Header title="More" subtitle="Custom cards, quick builders, vocabulary, settings, help and about." language={preferredLanguage} />
       <main className="mx-auto max-w-md px-4 py-4 space-y-4">
         <div className="grid grid-cols-2 gap-2">
           {[
@@ -1066,6 +1071,7 @@ function VocabularyPanel({ route, navigate, onSpeak }: { route: AppRoute; naviga
 function SettingsPanel({ settings, onSettingsChange, preferredLanguage, onLanguageChange, noiseMode, onToggleNoise }: { settings: SpeechSettings; onSettingsChange: (settings: SpeechSettings) => void; preferredLanguage: UnderstandingLanguage; onLanguageChange: (language: UnderstandingLanguage) => void; noiseMode: boolean; onToggleNoise: () => void }) {
   return (
     <div className="space-y-4">
+      <AppearanceControl language={preferredLanguage} inline />
       <div className="rounded-3xl border border-indigo-200 bg-white p-4 shadow-sm">
         <p className="text-sm font-black text-slate-900">Staff-card language</p>
         <p className="mt-1 text-xs leading-relaxed text-slate-600">Staff cards use this language when a card has a verified translation. Other cards fall back to English so the app never breaks.</p>

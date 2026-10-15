@@ -1,0 +1,142 @@
+/* The same interaction and spacing rules are used in both Kuma apps. */
+html { scroll-padding-block: 1rem calc(var(--kuma-nav-height) + 6rem); }
+.kuma-app { line-height: 1.6; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+.kuma-app :where(button, input, select, textarea, summary) { touch-action: manipulation; }
+.kuma-app :where(button, select, summary) { min-height: 44px; }
+.kuma-app :where(button, select, input, textarea) { min-width: 0; }
+.kuma-app :where(input:not([type="range"]):not([type="checkbox"]):not([type="radio"]), select, textarea) { font-size: 1rem; }
+.kuma-app :where(h1, h2, h3, p, button, a, label) { overflow-wrap: anywhere; }
+.kuma-app .text-xs { font-size: .8125rem; line-height: 1.55; }
+.kuma-app .text-sm { font-size: .9375rem; }
+.kuma-app :is([class~="text-[9px]"], [class~="text-[10px]"], [class~="text-[11px]"]) { font-size: .75rem; line-height: 1.5; }
+.kuma-app .font-black { font-weight: 750; }
+.kuma-app .text-slate-400 { color: var(--hk-subtle); }
+.kuma-app :is([class~="text-white/45"], [class~="text-white/60"], [class~="text-white/70"]) { color: rgb(255 255 255 / .85); }
+.kuma-app :where(button, a, input, select, textarea, summary):focus-visible { outline: 3px solid var(--hk-primary-ink, #0f766e) !important; outline-offset: 3px; }
+.kuma-app :where(button, a, summary):focus-visible { scroll-margin-block: 5rem 10rem; }
+.kuma-app :where(button:disabled) { cursor: not-allowed; }
+.kuma-app .no-scrollbar { scrollbar-width: thin; scrollbar-color: var(--hk-control-border) transparent; }
+.kuma-app .no-scrollbar::-webkit-scrollbar { display: block; height: 4px; }
+.kuma-app .no-scrollbar::-webkit-scrollbar-thumb { border-radius: 99px; background: var(--hk-control-border); }
+.kuma-app footer a { display: inline-flex; align-items: center; min-height: 44px; }
+.kuma-app .animate-floaty, .kuma-app .animate-wave { animation: none; }
+
+.kuma-appearance-trigger, .kuma-appearance-close {
+  display: inline-flex; min-height: 44px; align-items: center; justify-content: center;
+  gap: .5rem; padding: .5rem .75rem; border: 1px solid var(--hk-control-border, #818d8b);
+  border-radius: 12px; background: var(--hk-surface, #fffdfa); color: var(--hk-ink, #26343c);
+  font-size: .8125rem; font-weight: 700; line-height: 1.4;
+}
+.kuma-appearance-trigger { flex-shrink: 0; }
+.kuma-appearance-dialog {
+  width: min(30rem, calc(100% - 1.5rem)); max-height: calc(100dvh - 2rem);
+  padding: 0; border: 1px solid var(--hk-border); border-radius: 22px;
+  background: var(--hk-surface); color: var(--hk-ink); overflow: auto;
+  box-shadow: var(--hk-floating-shadow);
+}
+.kuma-appearance-dialog::backdrop { background: rgb(13 24 28 / .55); }
+.kuma-appearance-dialog-content { padding: 1.25rem; }
+.kuma-appearance-heading { display: flex; align-items: center; justify-content: space-between; gap: .75rem; margin-bottom: 1rem; }
+.kuma-appearance-heading h2, .kuma-appearance-panel h2 { font-size: 1.125rem; font-weight: 750; }
+.kuma-appearance-options { display: grid; gap: 1rem; }
+.kuma-appearance-options fieldset { min-width: 0; }
+.kuma-appearance-options legend { margin-bottom: .5rem; font-size: .875rem; font-weight: 700; color: var(--hk-muted); }
+.kuma-appearance-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .5rem; }
+.kuma-appearance-grid button { display: flex; min-width: 0; min-height: 72px; flex-direction: column; align-items: center; justify-content: center; gap: .5rem; padding: .65rem .25rem; border: 1px solid; border-radius: 12px; font-size: .8125rem; font-weight: 700; line-height: 1.5; }
+.kuma-appearance-panel { padding: 1rem; border: 1px solid var(--hk-border); border-radius: 20px; background: var(--hk-surface); }
+.kuma-appearance-panel h2 { margin-bottom: 1rem; }
+
+/* Match the Hello home banner while keeping existing category/status colors. */
+.kuma-app :is(.hero-shell, .hk-primary-bg) { background: linear-gradient(135deg, var(--hk-primary), var(--hk-primary-dark) 72%, var(--hk-primary-deep)); }
+.kuma-app :is(.bg-teal-700, .bg-emerald-700, .primary-button) { background-color: var(--hk-primary); }
+.kuma-app .primary-button { color: #fff; }
+.kuma-app .secondary-button { background: var(--hk-surface); border-color: var(--hk-control-border); color: var(--hk-ink); min-height: 44px; }
+.kuma-app .surface-card { background: var(--hk-surface); border-color: var(--hk-border); box-shadow: var(--hk-card-shadow); }
+.kuma-app :is(.section-title, .field-label) { color: var(--hk-ink); }
+.kuma-app .eyebrow { color: var(--hk-primary-ink); letter-spacing: .045em; }
+.kuma-app .field-label { font-size: .8125rem; text-transform: none; letter-spacing: normal; }
+.kuma-app .upload-zone { background: var(--hk-primary-soft); border-color: var(--hk-primary-ink); }
+
+/* KumaSpeak: all six existing destinations remain visible. */
+.kuma-bottom-nav { padding-bottom: max(.5rem, env(safe-area-inset-bottom)); box-shadow: 0 -4px 20px rgb(26 40 38 / .06); }
+.kuma-bottom-nav > div { grid-template-columns: repeat(auto-fit, minmax(min(100%, 3rem), 1fr)); }
+.kuma-nav-item { display: flex; min-width: 0; min-height: 62px; flex-direction: column; align-items: center; justify-content: flex-start; gap: .3rem; padding: .5rem .125rem; color: var(--hk-muted); }
+.kuma-nav-item[aria-current="page"] { box-shadow: inset 0 3px 0 var(--hk-primary-ink); font-weight: 800; }
+.kuma-nav-label { display: block; max-width: 100%; font-size: .75rem; font-weight: 700; line-height: 1.35; }
+.kuma-speak-shell { padding-bottom: calc(var(--kuma-nav-height) + 7rem); background: var(--hk-page) !important; }
+.kuma-quick-replay { bottom: calc(var(--kuma-nav-height) + .75rem); flex-direction: row; }
+.kuma-app .phone-shell { border: 1px solid var(--hk-control-border); border-radius: 24px; padding: .5rem; background: var(--hk-surface-soft); box-shadow: var(--hk-card-shadow); }
+.kuma-app .phone-screen-content { border-radius: 18px; padding: .75rem; padding-top: 1rem; }
+.kuma-app .phone-shell > .absolute { display: none; }
+.kuma-app .phone-screen-content > button { min-height: 100px; border-radius: 16px; }
+.kuma-app .phone-screen-content > .mb-3 { flex-wrap: wrap; gap: .5rem; }
+.kuma-conversation-preview { background: var(--hk-page) !important; max-height: 52svh; overflow-y: auto; overscroll-behavior: contain; }
+
+/* KumaGomi: saved area and the current day's collection take visual priority. */
+.kuma-app .collection-card-today { border: 2px solid var(--hk-primary-ink); }
+.kuma-app .collection-grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr)); }
+.kuma-situations-grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr)); }
+.kuma-area-summary { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .75rem; margin-bottom: 1rem; padding: .75rem 1rem; border: 1px solid var(--hk-border); border-radius: 16px; background: var(--hk-surface); }
+.kuma-area-summary p { flex: 1; min-width: 10rem; color: var(--hk-ink); font-size: .9375rem; font-weight: 650; }
+.kuma-area-details { flex: 1; min-width: 6rem; }
+.kuma-area-details summary { display: flex; min-height: 44px; align-items: center; justify-content: space-between; gap: .5rem; cursor: pointer; font-size: .875rem; font-weight: 700; color: var(--hk-ink); list-style: none; }
+.kuma-area-details summary::-webkit-details-marker { display: none; }
+.kuma-area-details[open] { flex-basis: 100%; order: 2; }
+.kuma-area-details[open] summary > span:last-child { transform: rotate(180deg); }
+.kuma-area-details p { margin-top: .5rem; font-weight: 500; font-size: .875rem; }
+.kuma-app .kuma-returning-hero { margin-top: .75rem; }
+.kuma-app .kuma-returning-hero h1 { margin-top: .5rem; max-width: 42rem; font-size: 1.3rem; }
+.kuma-app .kuma-returning-hero > p { margin-top: .5rem; font-size: .8125rem; line-height: 1.5; }
+.kuma-app .floating-actions { background: var(--hk-surface); border-color: var(--hk-border); }
+.kuma-app .floating-action-button { min-height: 48px; color: #fff; background: var(--hk-primary); }
+.kuma-app .floating-action-button[aria-pressed="true"] { outline: 2px solid var(--hk-primary-ink); outline-offset: 2px; }
+.kuma-app .kuma-gomi-shell { background: var(--hk-page) !important; }
+.kuma-app .floating-actions .more-shortcut { border-color: var(--hk-border); }
+.kuma-app .category-badge { max-width: 100%; white-space: normal; }
+.kuma-app a.category-badge { min-height: 44px; min-width: 44px; }
+.kuma-app .kuma-modal-body { overscroll-behavior: contain; }
+html[data-theme="soft-dark"] .category-burnable { background: #45343a; color: #ffc7d1; border-color: #98606e; }
+html[data-theme="soft-dark"] .category-paper { background: #293b53; color: #bad5ff; border-color: #687586; }
+html[data-theme="soft-dark"] .category-plastic { background: #3c374a; color: #e0ceff; border-color: #8d7da8; }
+html[data-theme="soft-dark"] .category-resource { background: #2b403b; color: #b9e4d4; border-color: #688d7e; }
+html[data-theme="soft-dark"] .category-pet { background: #263f46; color: #b2e0e5; border-color: #68868d; }
+html[data-theme="soft-dark"] .category-landfill { background: #3b3934; color: #e3dbcc; border-color: #8d8879; }
+html[data-theme="soft-dark"] .category-hazardous { background: #443b30; color: #ffe1a7; border-color: #a58b5e; }
+html[data-theme="soft-dark"] .category-oversized { background: #463931; color: #ffd1b6; border-color: #9c7c67; }
+html[data-theme="soft-dark"] .category-special { background: #403542; color: #f2c7ee; border-color: #957a98; }
+html[data-theme="soft-dark"] .category-unknown { background: var(--hk-surface-raised); color: var(--hk-ink); border-color: var(--hk-control-border); }
+
+@media (max-width: 639px) {
+  .kuma-app .floating-action-button { background: transparent; color: var(--hk-primary-ink); gap: .3rem; min-height: 58px; font-size: .75rem; }
+  .kuma-app .floating-action-button > span[aria-hidden] { font-size: 1.25rem; }
+  .kuma-app .floating-actions .more-shortcut { background: var(--hk-surface); box-shadow: var(--hk-floating-shadow); }
+  .kuma-app .hero-shell h1 { font-size: 1.65rem; line-height: 1.3; }
+  .kuma-app .hero-shell .kuma-returning-hero h1 { font-size: 1.25rem; }
+  .kuma-app .hero-shell nav { align-items: flex-start; }
+  .kuma-app .hero-shell nav > div { flex-wrap: wrap; }
+  .kuma-app .header-link { display: inline-flex; align-items: center; min-height: 44px; padding-inline: .5rem; }
+}
+@media (max-width: 379px) {
+  .kuma-app .collection-grid, .kuma-situations-grid { grid-template-columns: minmax(0, 1fr); }
+  .kuma-nav-label { font-size: .6875rem; }
+  .kuma-app .kuma-search-form { flex-wrap: wrap; }
+  .kuma-search-form .field-input { flex: 1 1 100%; }
+  .kuma-search-form .primary-button { width: 100%; }
+  .kuma-appearance-dialog-content { padding: 1rem; }
+}
+@media (max-height: 700px) {
+  .kuma-conversation-preview { position: static; max-height: none; overflow: visible; }
+}
+@media (hover: hover) {
+  .kuma-nav-item:hover { background: var(--hk-surface-soft); }
+  .kuma-appearance-trigger:hover, .kuma-appearance-close:hover { background: var(--hk-surface-soft); }
+}
+@media (hover: none) { .kuma-app .card-lift:hover { transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}
+@media (forced-colors: active) {
+  .kuma-nav-item[aria-current="page"], .kuma-app .collection-card-today { outline: 2px solid Highlight; }
+}
+@media print { .kuma-appearance-trigger, .kuma-bottom-nav, .kuma-quick-replay { display: none !important; } }

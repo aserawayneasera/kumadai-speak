@@ -26,17 +26,17 @@ export default function PhonePreview({ phrase, selections, preferredLanguage, on
   return (
     <div className="phone-shell shadow-phone relative overflow-hidden p-4">
       <div className="absolute left-1/2 top-2 h-1.5 w-20 -translate-x-1/2 rounded-full bg-slate-900/80" />
-      <div className="rounded-[1.8rem] bg-white p-4 pt-7 shadow-inner">
+      <div className="phone-screen-content rounded-[1.8rem] bg-white p-4 pt-7 shadow-inner">
         <div className="mb-3 flex items-center justify-between gap-3">
           <div className="min-w-0">
             <p className="text-[10px] font-black uppercase tracking-wide text-slate-400">{labels.eyebrow}</p>
             <p className="text-xs font-bold text-teal-700">{labels.title}</p>
           </div>
           <div className="flex items-center gap-1.5">
-            <button type="button" onClick={onToggleFavorite} className={`flex h-9 w-9 items-center justify-center rounded-full text-lg ${favorite ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-500'}`} aria-label="Save phrase">
+            <button type="button" onClick={onToggleFavorite} className={`flex h-11 w-11 items-center justify-center rounded-full text-lg ${favorite ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-500'}`} aria-label="Save phrase" aria-pressed={favorite}>
               {favorite ? '★' : '☆'}
             </button>
-            <button type="button" onClick={onFullscreen} className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-lg text-slate-600" aria-label="Fullscreen show mode">
+            <button type="button" onClick={onFullscreen} className="flex h-11 w-11 items-center justify-center rounded-full bg-slate-100 text-lg text-slate-600" aria-label="Fullscreen show mode">
               ⛶
             </button>
             <div className="relative flex h-11 w-11 items-center justify-center rounded-full bg-violet-100 text-xl">

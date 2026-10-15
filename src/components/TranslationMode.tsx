@@ -10,6 +10,7 @@ import {
 } from '@/lib/translation';
 import { getTranslationCopy, NATIVE_LANGUAGE_NAMES, NATIVE_TALK_LABELS, type TranslationCopy } from '@/lib/translationCopy';
 import { useVoiceInput, type VoiceInputEngine } from '@/lib/useVoiceInput';
+import { AppearanceControl } from './Appearance';
 
 function errorMessage(code: string, copy: TranslationCopy) {
   const errors: Record<string, string> = {
@@ -231,7 +232,8 @@ export default function TranslationMode({ active, preferredLanguage, onLanguageC
 
   return (
     <section hidden={!active} aria-label={copy.title} lang={preferredLanguage}>
-      <header className="hk-primary-bg px-5 pb-5 pt-8 text-white">
+      <header className="hk-home-gradient px-5 pb-5 pt-4 text-white">
+        <div className="mx-auto mb-3 flex max-w-md justify-end"><AppearanceControl language={preferredLanguage} /></div>
         <div className="mx-auto flex max-w-md items-start justify-between gap-3">
           <div><p className="text-xs font-bold text-white/75">KumaSpeak</p><h1 className="mt-1 text-2xl font-black">{copy.title}</h1><p className="mt-1 text-sm text-white/85">{copy.subtitle}</p></div>
           <button type="button" onClick={onBack} className="min-h-[44px] rounded-2xl bg-white/15 px-3 py-2 text-xs font-bold">← {copy.back}</button>

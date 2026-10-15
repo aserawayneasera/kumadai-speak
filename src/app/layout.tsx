@@ -1,5 +1,9 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
+import './appearance.css';
+import './ux.css';
+import { AppearanceProvider } from '@/components/Appearance';
+import { appearanceBootstrap } from '@/lib/appearance';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from "@vercel/speed-insights/next"
 
@@ -43,16 +47,15 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
+        <script dangerouslySetInnerHTML={{ __html: appearanceBootstrap }} />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteStructuredData) }}
         />
       </head>
-      <Analytics />
-      <SpeedInsights />
-      <body>{children}</body>
+      <body className="kuma-app"><AppearanceProvider>{children}<Analytics /><SpeedInsights /></AppearanceProvider></body>
     </html>
   );
 }
